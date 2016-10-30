@@ -27,11 +27,11 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        if (password_string.equals(actual)){
+                        if (password_string.equals(actual)==true){
                             response.setText("Correct Password");
                             System.out.println(password_string);
                         }else{
-                            response.setText("Correct Password");
+                            response.setText("Incorrect Password");
                             System.out.println(password_string);
                         }
                     }
