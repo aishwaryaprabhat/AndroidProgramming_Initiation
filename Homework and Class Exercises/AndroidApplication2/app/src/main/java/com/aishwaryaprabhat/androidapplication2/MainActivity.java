@@ -6,11 +6,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     public static EditText password;
     public static TextView response;
-    public static String password_string;
+//    public static String password_string;
+//    public static boolean check;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,25 +20,28 @@ public class MainActivity extends AppCompatActivity {
         password = (EditText)findViewById(R.id.password);
         response = (TextView)findViewById(R.id.response);
         Button button =(Button)findViewById(R.id.button);
-        password_string = password.getText().toString();
-        System.out.print("Hello");
-        System.out.println(password_string);
-        final String actual = "java";
+
         button.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
-                        if (password_string.equals(actual)==true){
-                            response.setText("Correct Password");
-                            System.out.println(password_string);
+                        if (passwordchecker(password.getText().toString())==true){
+                            Toast.makeText(MainActivity.this,"Correct Password",Toast.LENGTH_LONG).show();
+
                         }else{
-                            response.setText("Incorrect Password");
-                            System.out.println(password_string);
+                            Toast.makeText(MainActivity.this,"Incorrect Password",Toast.LENGTH_LONG).show();
+
                         }
                     }
                 }
         );
 
+    }
+    public static boolean passwordchecker(String password_ud){
+        System.out.println(password_ud);
+        if (password_ud.equals("java")==true){
+            return true;
+        }else{return false;}
     }
 }
