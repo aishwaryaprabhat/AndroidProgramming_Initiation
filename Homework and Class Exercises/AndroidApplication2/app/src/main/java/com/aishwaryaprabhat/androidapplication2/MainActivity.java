@@ -1,14 +1,17 @@
 package com.aishwaryaprabhat.androidapplication2;
 
-import android.support.v7.app.AppCompatActivity;
+//import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 public class MainActivity extends AppCompatActivity {
+//    private static android.R.attr R;
     public static EditText password;
     public static TextView response;
 //    public static String password_string;

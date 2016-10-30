@@ -1,8 +1,10 @@
 package com.aishwaryaprabhat.checkoff3;
 
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+//import android.support.v4.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,13 +24,13 @@ public class EmailActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(Intent.ACTION_SEND);
-                        intent.putExtra(Intent.EXTRA_EMAIL,to.getText().toString());
-                        intent.putExtra(Intent.EXTRA_CC,CC.getText().toString());
-                        intent.putExtra(Intent.EXTRA_SUBJECT,subject.getText().toString());
-                        intent.putExtra(Intent.EXTRA_TEXT,email_body.getText().toString());
-                        intent.setType("message/rfc822");
-
+                        Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE);
+                        intent.putExtra(Intent.EXTRA_EMAIL, to.getText().toString());
+                        intent.putExtra(Intent.EXTRA_CC, CC.getText().toString());
+                        intent.putExtra(Intent.EXTRA_SUBJECT, subject.getText().toString());
+                        intent.putExtra(Intent.EXTRA_TEXT, email_body.getText().toString());
+                        intent.setType("plain/text");
+                        startActivity(intent);
                     }
                 }
 
