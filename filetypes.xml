@@ -3,6 +3,7 @@
     <extensionMap>
       <mapping pattern="Lesson 1" type="CLASS" />
       <mapping pattern="Lesson1" type="CLASS" />
+      <mapping ext="bin" type="PLAIN_TEXT" />
     </extensionMap>
   </component>
 </application>
