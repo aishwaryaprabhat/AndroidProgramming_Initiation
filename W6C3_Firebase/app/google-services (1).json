@@ -1,0 +1,73 @@
+{
+  "project_info": {
+    "project_number": "178473598479",
+    "firebase_url": "https://firstandroidfirebaseapp.firebaseio.com",
+    "project_id": "firstandroidfirebaseapp",
+    "storage_bucket": "firstandroidfirebaseapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:178473598479:android:b0efdf14b4f31e4c",
+        "android_client_info": {
+          "package_name": "com.aishwaryaprabhat.firebasebasic"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "178473598479-gcgn5b6661535trcl1oevcscmf7p9fr8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB--G8mFOk0ovH7TS7Sl3_kRqptW_ZwwI4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:178473598479:android:1ab1cbe7d4fed76c",
+        "android_client_info": {
+          "package_name": "com.aishwaryaprabhat.allcheckoffs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "178473598479-gcgn5b6661535trcl1oevcscmf7p9fr8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB--G8mFOk0ovH7TS7Sl3_kRqptW_ZwwI4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

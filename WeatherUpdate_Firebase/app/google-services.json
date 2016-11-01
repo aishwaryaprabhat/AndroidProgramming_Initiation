@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "23196348387",
+    "firebase_url": "https://crowdweather-2c742.firebaseio.com",
+    "project_id": "crowdweather-2c742",
+    "storage_bucket": "crowdweather-2c742.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:23196348387:android:9b73b57fb05e18f6",
+        "android_client_info": {
+          "package_name": "com.aishwaryaprabhat.weatherupdate_firebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "23196348387-ctdt54t0818nct7glcemv4u3imcotvn9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5YMtQmIisSePvQJZAaUW7I1NRr0dotGc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
