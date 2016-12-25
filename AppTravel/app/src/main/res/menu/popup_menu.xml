@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/one"
+        android:title="Marina Bay Sands"/>
+
+    <item
+        android:id="@+id/two"
+        android:title="Singapore Flyer"/>
+
+    <item
+        android:id="@+id/three"
+        android:title="Vivo City"/>
+
+    <item
+        android:id="@+id/four"
+        android:title="Resorts World Sentosa"/>
+
+    <item
+        android:id="@+id/five"
+        android:title="Buddha Relic Tooth"/>
+
+    <item
+        android:id="@+id/six"
+        android:title="Singapore Zoo"/>
+
+
+
+</menu>

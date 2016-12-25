@@ -2,11 +2,17 @@ package com.aishwaryaprabhat.gpsforparking;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.ResultReceiver;
+import android.os.StrictMode;
+import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -19,91 +25,179 @@ import com.firebase.client.ValueEventListener;
 import com.google.android.gms.common.api.GoogleApiClient;
 //import com.google.android.gms.identity.intents.Address;
 import android.location.Address;
+import android.widget.RadioButton;
+import android.widget.Toast;
+
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.lang.reflect.Array;
+import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,  GoogleMap.OnMarkerClickListener {
 
     protected Location mLastLocation;
     private ResultReceiver mResultReceiver;
     private GoogleMap mMap;
     double lat;
     double longit;
+    Double parking_lot_1_lat;
+    Double parking_lot_2_lat;
+    Double parking_lot_3_lat;
+    Double parking_lot_1_long;
+    Double parking_lot_2_long;
+    Double parking_lot_3_long;
+    String parking_lot_1_rate;
+    String parking_lot_2_rate;
+    String parking_lot_3_rate;
+    String parking_lot_1_lots;
+    String parking_lot_2_lots;
+    String parking_lot_3_lots;
+
+
+    private static final int portnumber = 52471;
+    private static final String hostname = "10.13.33.145";
+    //10.13.33.145
+    private static final String debugstring = "debugString";
+    private Socket socket = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+        }
         setContentView(R.layout.activity_maps);
+
+
+        //Client-server stuff
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        Button search = (Button)findViewById(R.id.searchbutton);
+
+        Button search = (Button) findViewById(R.id.searchbutton);
+
+        System.out.println("created");
+
+
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                geolocate(view);
+                //push_request_to_client()
+                System.out.println("clicked");
+                ArrayList<String> parking_lot_names = new ArrayList<String>();
+                parking_lot_names.add("Simei Block 256");
+                parking_lot_names.add("Simei Block 244");
+                parking_lot_names.add("My Manhattan");
+
+                geolocate(view, parking_lot_names);
 //                onMapReady(mMap);
             }
         });
-    }
-    public void geolocate(View v){
 
-        final EditText searchlocation = (EditText)findViewById(R.id.locationsearched);
+        RadioButton refresh = (RadioButton)findViewById(R.id.radioButton);
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //push_request_to_client()
+                System.out.println("clicked");
+
+                ArrayList<String> parking_lot_names = new ArrayList<String>();
+                parking_lot_names.add("Simei Block 256");
+                parking_lot_names.add("Simei Block 244");
+                parking_lot_names.add("My Manhattan");
+
+                geolocate(view, parking_lot_names);
+//                onMapReady(mMap);
+            }
+        });
+
+    }
+
+    public void geolocate(View v, final ArrayList<String> parking_lot_names) {
+
+
+
+        final EditText searchlocation = (EditText) findViewById(R.id.locationsearched);
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromInputMethod(searchlocation.getWindowToken(),0);
-        String location = searchlocation.getText().toString();
+        imm.hideSoftInputFromInputMethod(searchlocation.getWindowToken(), 0);
+        String location = "Simei East Point";
         Geocoder gc = new Geocoder(this);
 
-        Firebase myurl = new Firebase("https://gpsforparking.firebaseio.com/Destination");
-
+        List<Address> list_of_location = null;
+        String name = "East Point Mall";
         try {
-            List<Address> list_of_location = gc.getFromLocationName(location, 1);
+            list_of_location = gc.getFromLocationName(location, 1);
             Address add = list_of_location.get(0);
-            String name = add.getLocality();
-            lat = add.getLatitude();
-            longit = add.getLongitude();
-
-
-            myurl.child("Name").setValue(name);
-            myurl.child("Longitude").setValue(longit);
-            myurl.child("Latitude").setValue(lat);
-
-            LatLng destination = new LatLng(lat, longit);
-            mMap.addMarker(new MarkerOptions().position(destination).title("Destination"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(destination));
+            name = add.getFeatureName();
+            final double lat_destination = add.getLatitude();
+            final double longit_destination = add.getLongitude();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        LatLng destination = new LatLng(1.343385, 103.952942);
+        mMap.addMarker(new MarkerOptions().position(destination).title(name));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(destination));
 
 
+        Firebase myurl = new Firebase("https://parkingapp-b2b6f.firebaseio.com/parkinginfo");
+        myurl.child("Destination").child("name").setValue(name);
+        myurl.child("Destination").child("lat").setValue(1.343385);
+        myurl.child("Destination").child("long").setValue(103.952942);
 
-        }
+//        myurl.addChildEventListener()
+
+        myurl.addValueEventListener(new ValueEventListener() {
 
 
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
 
+                showMarker(dataSnapshot, parking_lot_names);
 
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+                System.out.println("cancelled");
+
+            }
+        });
+
+
+    }
 
 
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
      * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
+     * we just add a marker near Sydney, Australx   ia.
      * If Google Play services is not installed on the device, the user will be prompted to install
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
@@ -113,9 +207,173 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng destination = new LatLng(lat, longit);
-        mMap.addMarker(new MarkerOptions().position(destination).title("Destination"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(destination));
+        LatLng destination = new LatLng(1.341873, 103.963067);
+        mMap.addMarker(new MarkerOptions().position(destination).title("You are here"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(destination, 18));
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mMap.setMyLocationEnabled(true);
+
+
     }
 
+    public void showMarker(DataSnapshot dataSnapshot, ArrayList<String>parking_lot_names ) {
+
+                    mMap.setOnMarkerClickListener(this);
+
+                    parking_lot_1_lat = dataSnapshot.child(parking_lot_names.get(0)).child("latitude").getValue(Double.class);
+                    parking_lot_2_lat = dataSnapshot.child(parking_lot_names.get(1)).child("latitude").getValue(Double.class);
+                    parking_lot_3_lat = dataSnapshot.child(parking_lot_names.get(2)).child("latitude").getValue(Double.class);
+
+                    parking_lot_1_long = dataSnapshot.child(parking_lot_names.get(0)).child("longitude").getValue(Double.class);
+                    parking_lot_2_long =dataSnapshot.child(parking_lot_names.get(1)).child("longitude").getValue(Double.class);
+                    parking_lot_3_long =dataSnapshot.child(parking_lot_names.get(2)).child("longitude").getValue(Double.class);
+
+                    LatLng lot1 = new LatLng(parking_lot_1_lat,parking_lot_1_long);
+                    LatLng lot2 = new LatLng(parking_lot_2_lat,parking_lot_2_long);
+                    LatLng lot3 = new LatLng(parking_lot_3_lat,parking_lot_3_long);
+
+                    parking_lot_1_lots = dataSnapshot.child(parking_lot_names.get(0)).child("lots").getValue(String.class);
+                    parking_lot_2_lots = dataSnapshot.child(parking_lot_names.get(1)).child("lots").getValue(String.class);
+                    parking_lot_3_lots = dataSnapshot.child(parking_lot_names.get(2)).child("lots").getValue(String.class);
+
+
+                    parking_lot_1_rate = dataSnapshot.child(parking_lot_names.get(0)).child("rate").getValue(String.class);
+                    parking_lot_2_rate = dataSnapshot.child(parking_lot_names.get(1)).child("rate").getValue(String.class);
+                    parking_lot_3_rate = dataSnapshot.child(parking_lot_names.get(2)).child("rate").getValue(String.class);
+
+                    Marker a = mMap.addMarker(new MarkerOptions().position(lot1).title("Simei Block 256"));
+
+
+                    Marker b = mMap.addMarker(new MarkerOptions().position(lot2).title("Simei Block 244"));
+
+                    Marker c = mMap.addMarker(new MarkerOptions().position(lot3).title("My Manhattan"));
+
+
+                    System.out.println(parking_lot_1_lots);
+                    System.out.println(parking_lot_2_lots);
+                    System.out.println(parking_lot_3_lots);
+
+
+//        .snippet("Available lots:"+parking_lot_1_lots+" price:6/hr"))
+//        .snippet("Available lots:"+parking_lot_2_lots+" price:4/hr"))
+//        .snippet("Available lots:"+parking_lot_3_lots+" price:3/hr"))
+
+
+
+
+//                    a.setSnippet("Available lots:"+parking_lot_1_lots+" price:6/hr");
+//                    b.setSnippet("Available lots:"+parking_lot_2_lots+" price:4/hr");
+//                    c.setSnippet("Available lots:"+parking_lot_3_lots+" price:3/hr");
+//
+
+
+
+
+
+//                        a.showInfoWindow();
+//                        b.showInfoWindow();
+//                        c.showInfoWindow();
+//
+//                    mMap.setOnMarkerClickListener(O);
+
+
+//                    mMap.setOnMarkerClickListener();
+//
+//        Simei Block 256");
+//        parking_lot_names.add("Simei Block 244");
+//        parking_lot_names.add("My Manhattan");
+
+
+
+    }
+
+
+
+    public void talktoserver(final double lat_destination1, final double longit_destination1){
+        new Thread() {
+
+            //(debugstring,"Attempting to connect to server");
+
+
+
+            {
+                try {
+                    socket = new Socket(hostname, portnumber);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                //send coordinates
+                BufferedWriter bw = null;
+                try {
+                    bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    bw.write(Double.toString(lat_destination1));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    bw.write(Double.toString(longit_destination1));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    bw.newLine();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    bw.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                //Receive info from server
+                BufferedReader br = null;
+                try {
+                    br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Message from client" + br);
+
+            }
+
+
+        }.start();
+
+
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        if (marker.getTitle().equals("Simei Block 256")){
+            System.out.println("Simei Block 256");
+            Toast.makeText(this, "Available lots:"+parking_lot_1_lots+" price:6/hr"
+
+                    ,
+                    Toast.LENGTH_SHORT).show();
+
+        }else if (marker.getTitle().equals( "Simei Block 244")){
+            Toast.makeText(this,"Available lots:"+parking_lot_2_lots+" price:4/hr",
+                    Toast.LENGTH_SHORT).show();
+        }else if (marker.getTitle().equals("My Manhattan")){
+            Toast.makeText(this,"Available lots:"+parking_lot_3_lots+" price:3/hr",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        return false;
+    }
 }
